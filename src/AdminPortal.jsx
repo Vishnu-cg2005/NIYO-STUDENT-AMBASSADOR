@@ -835,17 +835,6 @@ export default function AdminPortal({ onNavigateHome }) {
             </div>
           </header>
 
-          {/* Security & Prototype Notice Banner */}
-          <div className="admin-security-advisory px-4 py-2 border-bottom d-flex align-items-center justify-content-between flex-wrap gap-2" style={{ background: '#fefce8', borderColor: '#fef08a' }}>
-            <div className="d-flex align-items-center gap-2">
-              <span className="badge bg-warning text-dark fw-bold">ADMIN PREVIEW</span>
-              <span className="small text-dark">
-                <strong>Internal Administrative View (Isolated from Public Navigation):</strong> This screen is for authorized personnel only and is excluded from the public student website. Route separation is for development preview and is not a security boundary. Role-based access control (RBAC) and Supabase database RLS policies will enforce access when backend tables are deployed.
-              </span>
-            </div>
-            <span className="badge bg-light text-secondary border small">Demo / Preview Data</span>
-          </div>
-
           {/* Dynamic Page Views */}
           <main className="admin-content-view">
             {/* ========================================================= */}

@@ -21,6 +21,7 @@ import {
   FiStar,
   FiBriefcase,
   FiBookOpen,
+  FiHome,
 } from 'react-icons/fi';
 import { BsMegaphone } from 'react-icons/bs';
 import './styles.css';
@@ -809,6 +810,108 @@ function HomePage({ onNavigateApply, onNavigateLogin, onNavigateDashboard, curre
   );
 }
 
+function MobileBottomNav({
+  currentPage,
+  onNavigateHome,
+  onNavigateApply,
+  onNavigateDashboard,
+  onNavigateLogin,
+  currentUser,
+}) {
+  if (['apply', 'admin'].includes(currentPage)) return null;
+
+  return (
+    <nav className="mobile-bottom-nav" aria-label="Mobile Navigation">
+      <a
+        href="#home"
+        className={`mobile-tab-item ${currentPage === 'home' ? 'active' : ''}`}
+        onClick={(e) => {
+          e.preventDefault();
+          onNavigateHome();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+      >
+        <FiHome className="tab-icon" aria-hidden="true" />
+        <span>Home</span>
+      </a>
+
+      <a
+        href="#about"
+        className="mobile-tab-item"
+        onClick={(e) => {
+          if (currentPage !== 'home') {
+            e.preventDefault();
+            onNavigateHome();
+            setTimeout(() => {
+              const el = document.getElementById('about');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+          }
+        }}
+      >
+        <FiBookOpen className="tab-icon" aria-hidden="true" />
+        <span>About</span>
+      </a>
+
+      <button
+        type="button"
+        className="mobile-tab-apply-btn"
+        onClick={onNavigateApply}
+        aria-label="Apply to Niyo Ambassador Program"
+      >
+        <div className="apply-btn-bubble">
+          <FiArrowUpRight className="apply-icon" aria-hidden="true" />
+        </div>
+        <span>Apply</span>
+      </button>
+
+      <a
+        href="#faqs"
+        className="mobile-tab-item"
+        onClick={(e) => {
+          if (currentPage !== 'home') {
+            e.preventDefault();
+            onNavigateHome();
+            setTimeout(() => {
+              const el = document.getElementById('faqs');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+          }
+        }}
+      >
+        <FiMessageCircle className="tab-icon" aria-hidden="true" />
+        <span>FAQs</span>
+      </a>
+
+      {currentUser ? (
+        <a
+          href="#dashboard"
+          className={`mobile-tab-item ${currentPage === 'dashboard' ? 'active' : ''}`}
+          onClick={(e) => {
+            e.preventDefault();
+            onNavigateDashboard();
+          }}
+        >
+          <FiUser className="tab-icon" aria-hidden="true" />
+          <span>Profile</span>
+        </a>
+      ) : (
+        <a
+          href="#login"
+          className={`mobile-tab-item ${currentPage === 'login' ? 'active' : ''}`}
+          onClick={(e) => {
+            e.preventDefault();
+            onNavigateLogin();
+          }}
+        >
+          <FiLogIn className="tab-icon" aria-hidden="true" />
+          <span>Sign In</span>
+        </a>
+      )}
+    </nav>
+  );
+}
+
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [currentUser, setCurrentUser] = useState(() => {
@@ -1093,6 +1196,16 @@ function App() {
           currentUser={currentUser}
         />
       )}
+
+      {/* Mobile-Only Dedicated App Bottom Navigation Bar (Hidden on desktop) */}
+      <MobileBottomNav
+        currentPage={currentPage}
+        onNavigateHome={() => navigateTo('home')}
+        onNavigateApply={() => navigateTo('apply')}
+        onNavigateDashboard={() => navigateTo('dashboard')}
+        onNavigateLogin={() => navigateTo('login')}
+        currentUser={currentUser}
+      />
     </>
   );
 }

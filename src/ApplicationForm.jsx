@@ -515,6 +515,39 @@ export default function ApplicationForm({ onNavigateHome, onNavigateDashboard })
         onNavigateDashboard={onNavigateDashboard}
       />
 
+      {/* Mobile-Only Dedicated App Bar (Native App Style) */}
+      <div className="mobile-app-bar">
+        <button
+          type="button"
+          className="mobile-app-bar-back"
+          onClick={currentStep > 1 ? handlePrevious : onNavigateHome}
+          aria-label={currentStep > 1 ? 'Go to previous step' : 'Back to Home'}
+        >
+          <FiArrowLeft aria-hidden="true" />
+        </button>
+        <div className="mobile-app-bar-center">
+          <span className="mobile-app-kicker">APPLICATION · STEP {currentStep} OF 3</span>
+          <span className="mobile-app-title">{stepsMeta[currentStep - 1]?.title}</span>
+        </div>
+        <div className="mobile-app-bar-status">
+          <span className="mobile-saved-badge">
+            <span className="saved-pulse-dot"></span> Saved
+          </span>
+        </div>
+      </div>
+
+      {/* Mobile-Only Segmented Step Progress Bar */}
+      <div className="mobile-segmented-stepper" aria-hidden="true">
+        {stepsMeta.map((s) => (
+          <div
+            key={s.num}
+            className={`mobile-step-segment ${currentStep >= s.num ? 'filled' : ''} ${currentStep === s.num ? 'active' : ''}`}
+          >
+            <div className="segment-bar"></div>
+          </div>
+        ))}
+      </div>
+
       <main id="main-content" className="application-main">
         {/* Page Introduction */}
         <div className="page-shell application-intro">
@@ -610,8 +643,15 @@ export default function ApplicationForm({ onNavigateHome, onNavigateDashboard })
                   {currentStep === 1 && (
                     <div className="form-step-panel">
                       <div className="step-panel-header">
-                        <h2>Step 1 — Personal Details</h2>
-                        <p>Provide your basic contact and university affiliation details.</p>
+                        <div className="step-badge-wrap">
+                          <div className="step-badge-icon badge-step-1" aria-hidden="true">
+                            <FiUser />
+                          </div>
+                          <div>
+                            <h2>Step 1 — Personal Details</h2>
+                            <p>Provide your basic contact and university affiliation details.</p>
+                          </div>
+                        </div>
                       </div>
 
                       <div className="form-grid-two">
@@ -824,8 +864,15 @@ export default function ApplicationForm({ onNavigateHome, onNavigateDashboard })
                   {currentStep === 2 && (
                     <div className="form-step-panel">
                       <div className="step-panel-header">
-                        <h2>Step 2 — Academic Details</h2>
-                        <p>Share your academic credentials and professional links.</p>
+                        <div className="step-badge-wrap">
+                          <div className="step-badge-icon badge-step-2" aria-hidden="true">
+                            <FiBook />
+                          </div>
+                          <div>
+                            <h2>Step 2 — Academic Details</h2>
+                            <p>Share your academic credentials and professional links.</p>
+                          </div>
+                        </div>
                       </div>
 
                       <div className="form-grid-two">
@@ -961,8 +1008,15 @@ export default function ApplicationForm({ onNavigateHome, onNavigateDashboard })
                   {currentStep === 3 && (
                     <div className="form-step-panel">
                       <div className="step-panel-header">
-                        <h2>Step 3 — Community & Submit</h2>
-                        <p>Review your information and share your campus community motivation.</p>
+                        <div className="step-badge-wrap">
+                          <div className="step-badge-icon badge-step-3" aria-hidden="true">
+                            <FiAward />
+                          </div>
+                          <div>
+                            <h2>Step 3 — Community & Submit</h2>
+                            <p>Review your information and share your campus community motivation.</p>
+                          </div>
+                        </div>
                       </div>
 
                       {/* Final Review of Application */}
@@ -1111,6 +1165,46 @@ export default function ApplicationForm({ onNavigateHome, onNavigateDashboard })
                     </div>
                   )}
                 </form>
+
+                {/* Mobile Floating Bottom Action Dock (Native App Style) */}
+                <div className="mobile-action-dock" aria-label="Mobile Step Navigation">
+                  <div className="mobile-dock-inner">
+                    {currentStep > 1 && (
+                      <button
+                        type="button"
+                        className="button button-secondary mobile-dock-prev"
+                        onClick={handlePrevious}
+                        disabled={isSubmitting}
+                      >
+                        <FiArrowLeft aria-hidden="true" /> Previous
+                      </button>
+                    )}
+                    {currentStep < 3 ? (
+                      <button
+                        type="button"
+                        className="button button-primary mobile-dock-next"
+                        onClick={handleContinue}
+                      >
+                        Continue to Step {currentStep + 1} <FiArrowRight aria-hidden="true" />
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="button button-primary mobile-dock-submit"
+                        disabled={isSubmitting}
+                        onClick={handleSubmit}
+                      >
+                        {isSubmitting ? (
+                          <span className="submitting-spinner">Submitting Application...</span>
+                        ) : (
+                          <>
+                            Submit Application <FiArrowUpRight aria-hidden="true" />
+                          </>
+                        )}
+                      </button>
+                    )}
+                  </div>
+                </div>
               </>
             ) : (
               /* Success Confirmation Card */

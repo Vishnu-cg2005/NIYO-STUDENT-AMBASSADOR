@@ -397,7 +397,10 @@ export default function StudentDashboard({
                       <strong>Current Year:</strong> <span>{application.yearOfStudy || application.currentYear || '—'}</span>
                     </div>
                     <div>
-                      <strong>City & State:</strong> <span>{application.cityState || application.country || '—'}</span>
+                      <strong>Country:</strong> <span>{application.country || 'India'}</span>
+                    </div>
+                    <div>
+                      <strong>City & State:</strong> <span>{application.cityState || '—'}</span>
                     </div>
                     <div>
                       <strong>CGPA:</strong> <span>{application.cgpa || application.cgpaPercentage || '—'}</span>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   FiArrowRight,
   FiArrowLeft,
@@ -13,7 +13,11 @@ import {
   FiUser,
   FiBook,
   FiAward,
+  FiSearch,
+  FiChevronDown,
+  FiX,
 } from 'react-icons/fi';
+import countryData from '../countries.json';
 import { submitStudentApplication, getStudentApplication } from './adminService';
 
 const yearOptions = [
@@ -33,6 +37,7 @@ const initialFormState = {
   collegeName: '',
   department: '',
   currentYear: '',
+  country: 'India',
   cityState: '',
 
   // Step 2: Academic Details
@@ -103,6 +108,241 @@ function ApplicationHeader({ onNavigateHome, onNavigateDashboard }) {
   );
 }
 
+/**
+ * SearchableCountrySelect
+ * Uses countries.json to provide live search and instant selection.
+ * Module-level component to ensure zero unmounting on parent form state updates.
+ */
+function SearchableCountrySelect({
+  id,
+  name,
+  value,
+  onChange,
+  placeholder = 'Select your country',
+  error,
+  required = false,
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [highlightedIndex, setHighlightedIndex] = useState(0);
+  const containerRef = useRef(null);
+  const searchInputRef = useRef(null);
+  const listRef = useRef(null);
+
+  // Close dropdown on outside click or touch
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handlePointerDown = (event) => {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
+        setIsOpen(false);
+        setSearchQuery('');
+      }
+    };
+
+    document.addEventListener('mousedown', handlePointerDown);
+    document.addEventListener('touchstart', handlePointerDown);
+
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+      document.removeEventListener('touchstart', handlePointerDown);
+    };
+  }, [isOpen]);
+
+  // Auto-focus search input when opened
+  useEffect(() => {
+    if (isOpen) {
+      const timer = setTimeout(() => {
+        if (searchInputRef.current) {
+          searchInputRef.current.focus();
+        }
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
+
+  // Filter countries using countries.json
+  const filteredCountries = useMemo(() => {
+    if (!searchQuery.trim()) return countryData;
+    const q = searchQuery.toLowerCase().trim();
+    return countryData.filter((item) =>
+      item.country && item.country.toLowerCase().includes(q)
+    );
+  }, [searchQuery]);
+
+  // Reset highlighted index when filtered list changes
+  useEffect(() => {
+    setHighlightedIndex(0);
+  }, [filteredCountries]);
+
+  // Scroll highlighted item into view during keyboard navigation
+  useEffect(() => {
+    if (isOpen && listRef.current) {
+      const activeEl = listRef.current.children[highlightedIndex];
+      if (activeEl && typeof activeEl.scrollIntoView === 'function') {
+        activeEl.scrollIntoView({ block: 'nearest' });
+      }
+    }
+  }, [highlightedIndex, isOpen]);
+
+  const handleSelect = (countryName) => {
+    onChange({ target: { name, value: countryName } });
+    setIsOpen(false);
+    setSearchQuery('');
+  };
+
+  const handleClear = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    onChange({ target: { name, value: '' } });
+    setSearchQuery('');
+  };
+
+  const handleKeyDown = (e) => {
+    if (!isOpen) {
+      if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        setIsOpen(true);
+      }
+      return;
+    }
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setHighlightedIndex((prev) =>
+        prev < filteredCountries.length - 1 ? prev + 1 : prev
+      );
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : 0));
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (filteredCountries[highlightedIndex]) {
+        handleSelect(filteredCountries[highlightedIndex].country);
+      }
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      setIsOpen(false);
+    }
+  };
+
+  return (
+    <div
+      className={`searchable-select-wrap ${isOpen ? 'is-open' : ''} ${error ? 'has-error' : ''}`}
+      ref={containerRef}
+      onKeyDown={handleKeyDown}
+    >
+      <button
+        type="button"
+        id={id}
+        className="searchable-select-trigger"
+        onClick={() => setIsOpen((prev) => !prev)}
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+        aria-required={required}
+      >
+        <span className={value ? 'select-value' : 'select-placeholder'}>
+          {value || placeholder}
+        </span>
+        <div className="trigger-icons">
+          {value && (
+            <span
+              className="clear-icon"
+              onClick={handleClear}
+              onMouseDown={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+              }}
+              title="Clear selection"
+              aria-label="Clear selection"
+            >
+              <FiX aria-hidden="true" />
+            </span>
+          )}
+          <FiChevronDown className={`chevron-icon ${isOpen ? 'rotated' : ''}`} aria-hidden="true" />
+        </div>
+      </button>
+
+      {isOpen && (
+        <div
+          className="searchable-dropdown-panel"
+          role="listbox"
+          onMouseDown={(e) => e.stopPropagation()}
+        >
+          <div
+            className="dropdown-search-box"
+            onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            <FiSearch className="search-icon" aria-hidden="true" />
+            <input
+              ref={searchInputRef}
+              type="text"
+              className="dropdown-search-input"
+              placeholder="Search country..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onClick={(e) => e.stopPropagation()}
+              onMouseDown={(e) => e.stopPropagation()}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  if (filteredCountries[highlightedIndex]) {
+                    handleSelect(filteredCountries[highlightedIndex].country);
+                  }
+                } else if (e.key === 'ArrowDown') {
+                  e.preventDefault();
+                  setHighlightedIndex((prev) =>
+                    prev < filteredCountries.length - 1 ? prev + 1 : prev
+                  );
+                } else if (e.key === 'ArrowUp') {
+                  e.preventDefault();
+                  setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : 0));
+                } else if (e.key === 'Escape') {
+                  e.preventDefault();
+                  setIsOpen(false);
+                }
+              }}
+              autoComplete="off"
+              aria-label="Search country"
+            />
+          </div>
+          <ul
+            ref={listRef}
+            className="dropdown-options-list"
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            {filteredCountries.length > 0 ? (
+              filteredCountries.map((c, index) => {
+                const isSelected = value === c.country;
+                const isHighlighted = highlightedIndex === index;
+                return (
+                  <li
+                    key={c.id || c.country}
+                    role="option"
+                    aria-selected={isSelected}
+                    className={`dropdown-option-item ${isSelected ? 'is-selected' : ''} ${isHighlighted ? 'is-highlighted' : ''}`}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                    }}
+                    onClick={() => handleSelect(c.country)}
+                    onMouseEnter={() => setHighlightedIndex(index)}
+                  >
+                    <span>{c.country}</span>
+                    {isSelected && <FiCheck className="option-check" aria-hidden="true" />}
+                  </li>
+                );
+              })
+            ) : (
+              <li className="dropdown-no-results">No countries found</li>
+            )}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function ApplicationForm({ onNavigateHome, onNavigateDashboard }) {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -140,6 +380,7 @@ export default function ApplicationForm({ onNavigateHome, onNavigateDashboard })
           fullName: user.fullName || '',
           email: user.email || '',
           collegeName: user.collegeName || '',
+          country: user.country || 'India',
         };
       }
     } catch {
@@ -191,6 +432,7 @@ export default function ApplicationForm({ onNavigateHome, onNavigateDashboard })
       if (!formData.collegeName.trim()) newErrors.collegeName = 'College name is required.';
       if (!formData.department.trim()) newErrors.department = 'Department is required.';
       if (!formData.currentYear) newErrors.currentYear = 'Please select current year of study.';
+      if (!formData.country || !formData.country.trim()) newErrors.country = 'Please select your country.';
       if (!formData.cityState.trim()) newErrors.cityState = 'City and State are required.';
     } else if (step === 2) {
       if (!formData.registerNumber.trim()) newErrors.registerNumber = 'Register / Roll number is required.';
@@ -515,26 +757,48 @@ export default function ApplicationForm({ onNavigateHome, onNavigateDashboard })
                         </div>
                       </div>
 
-                      <div className="form-field">
-                        <label htmlFor="cityState">
-                          City and State <span className="req-star" aria-hidden="true">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          id="cityState"
-                          name="cityState"
-                          value={formData.cityState}
-                          onChange={handleChange}
-                          placeholder="e.g. Bengaluru, Karnataka"
-                          className={errors.cityState ? 'has-error' : ''}
-                          aria-required="true"
-                          aria-invalid={errors.cityState ? 'true' : 'false'}
-                        />
-                        {errors.cityState && (
-                          <span className="field-error" role="alert">
-                            <FiAlertCircle aria-hidden="true" /> {errors.cityState}
-                          </span>
-                        )}
+                      <div className="form-grid-two">
+                        <div className="form-field">
+                          <label htmlFor="country">
+                            Country <span className="req-star" aria-hidden="true">*</span>
+                          </label>
+                          <SearchableCountrySelect
+                            id="country"
+                            name="country"
+                            value={formData.country}
+                            onChange={handleChange}
+                            placeholder="Select your country"
+                            error={Boolean(errors.country)}
+                            required
+                          />
+                          {errors.country && (
+                            <span id="error-country" className="field-error" role="alert">
+                              <FiAlertCircle aria-hidden="true" /> {errors.country}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="form-field">
+                          <label htmlFor="cityState">
+                            City and State <span className="req-star" aria-hidden="true">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            id="cityState"
+                            name="cityState"
+                            value={formData.cityState}
+                            onChange={handleChange}
+                            placeholder="e.g. Bengaluru, Karnataka"
+                            className={errors.cityState ? 'has-error' : ''}
+                            aria-required="true"
+                            aria-invalid={errors.cityState ? 'true' : 'false'}
+                          />
+                          {errors.cityState && (
+                            <span className="field-error" role="alert">
+                              <FiAlertCircle aria-hidden="true" /> {errors.cityState}
+                            </span>
+                          )}
+                        </div>
                       </div>
 
                       <div className="form-actions-row">
@@ -733,6 +997,9 @@ export default function ApplicationForm({ onNavigateHome, onNavigateDashboard })
                           </div>
                           <div>
                             <strong>Year of Study:</strong> <span>{formData.currentYear || '—'}</span>
+                          </div>
+                          <div>
+                            <strong>Country:</strong> <span>{formData.country || 'India'}</span>
                           </div>
                           <div>
                             <strong>City & State:</strong> <span>{formData.cityState || '—'}</span>

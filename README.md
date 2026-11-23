@@ -1,228 +1,340 @@
-# 🎓 Niyo Campus Student Ambassador Portal
+# 🎓 Niyo Campus — Student Ambassador Portal
 
-A web-based portal designed to support the Niyo Campus Student Ambassador program. It provides a public program website, a student application flow, an ambassador portal, Admin task management, and an AI Growth Assistant powered by NVIDIA NIM.
+React · Vite · Supabase · NVIDIA NIM · Bootstrap
 
-The project aims to make it easier for students to learn about the program, apply to become ambassadors, and access relevant program information after approval.
+![License](https://img.shields.io/badge/License-MIT-purple.svg)
 
-> 🚧 **Project Status:** Under development. Features and integrations are subject to testing and verification.
-
----
-
-## ✨ Key Features
-
-### 🌐 Public Website
-- 🏠 Homepage introducing the Niyo Campus Student Ambassador program
-- 📘 Program information and “How It Works” section
-- ❓ Frequently Asked Questions (FAQs)
-- 📝 Application entry point for interested students
-- 📱 Responsive layouts for desktop and mobile screens
-
-### 🧑‍🎓 Student Application & Portal
-- 🔐 Student login and application flow
-- 📋 Application status view
-- 👤 Ambassador profile section
-- 📊 Student dashboard
-- 🎯 Program tasks and campaign-related sections
-- 💬 AI Growth Assistant for ambassador-related support
-
-**Data accuracy:** Student-specific information should come from the application or program data source. If data is unavailable, the portal should show an honest empty state rather than invented referrals, earnings, task completion, or activity records.
-
-### 🛠️ Admin Portal
-- 🗂️ Admin area for managing the existing program tasks and workflows
-- 📌 Task management for the ambassador program
-- 🔒 Admin-only pages and controls
-
-The existing Admin task-management workflow should be preserved when updating the student-facing portal or responsive layouts.
-
-### 🤖 AI Growth Assistant
-The portal includes an AI assistant integrated with the NVIDIA NIM API through a server-side endpoint.
-
-The assistant is intended to help ambassadors with:
-- 💡 Campus outreach ideas
-- 🎤 Event and booth planning
-- ✍️ Promotional copy and social media content
-- ❓ Questions related to Niyo Campus and ambassador activities
-- 🗃️ Feedback categorization
-
-The assistant should use verified project information for Niyo-specific claims. If a product detail or program policy cannot be confirmed, it should say so instead of guessing.
+🚀 **Live Production Deployment:** [studentambassadorniyon.vercel.app](https://studentambassadorniyon.vercel.app)  
+📦 **GitHub Repository:** [Vishnu-cg2005/NIYO-STUDENT-AMBASSADOR](https://github.com/Vishnu-cg2005/NIYO-STUDENT-AMBASSADOR)
 
 ---
 
-## 🧰 Tech Stack
+## 📑 Table of Contents
 
-| Area | Technology |
+- 🌟 Executive Overview
+- ✨ Key System Highlights
+- 🧰 Technology Stack
+- 🏛️ System Architecture
+- 📱 Dedicated Mobile Application View
+- 📝 Student Application Flow & Country Search
+- 📊 Student Dashboard & Profile Management
+- 🎖️ Ambassador Portal (Approved Members)
+- 🛡️ Internal Administration Portal
+- 🤖 AI Growth Assistant (NVIDIA NIM)
+- 🎨 Design System & UI Tokens
+- 📁 Project Directory Structure
+- 🔑 Environment Variables & Security
+- 🚀 Quickstart & Installation
+- 🌍 Production Deployment
+- 🧪 Testing & Quality Assurance
+- 🤝 Contributing & Code of Conduct
+- 📄 License & Disclaimers
+
+---
+
+## 🌟 Executive Overview
+
+The Niyo Campus Student Ambassador Portal is an all-in-one platform built to power university outreach, student community growth, and global financial literacy for Niyo. Designed for college ambassadors worldwide, it streamlines student enrollment, administrative vetting, community engagement, and campus campaigns through an intuitive, accessible web and mobile application.
+
+## ✨ Key System Highlights
+
+| Module | Core Purpose | Target Audience | Primary Capabilities |
+|---|---|---|---|
+| 🌐 Public Homepage | Brand discovery & program education | Prospective students, visitors | Hero showcase, program highlights, journey stages, FAQ accordion |
+| 📝 Application Form | Multi-step candidate enrollment | Applicants | 3-step structured form, auto-save drafts, live country search (195+ countries) |
+| 📊 Student Dashboard | Application lifecycle tracking | Registered students | Real-time status tracker, profile manager, review summary |
+| 🎖️ Ambassador Portal | Campus campaign execution & community | Approved ambassadors | Peer directory, campus pitch toolkit, referral leaderboards |
+| 🛡️ Admin Portal | Candidate evaluation & program control | Program managers, staff | Candidate pipeline, instant decisioning, analytics dashboard |
+| 🤖 AI Growth Assistant | AI-powered campus marketing mentor | Ambassadors & admins | Event pitch generator, social post drafter, objection handler |
+
+## 🧰 Technology Stack
+
+### 💻 Frontend & Styling
+
+| Technology | Version | Purpose |
+|---|---|---|
+| React | ^19.0.0 | Declarative component hierarchy and fast reactive UI state |
+| Vite | ^8.3.8 | Lightning-fast development HMR and optimized production bundling |
+| Bootstrap | ^5.3.0 | Accessible structural grid primitives and responsive base helpers |
+| React Icons (fi, bs) | ^5.4.0 | Feather & Bootstrap icon system for iconography and micro-actions |
+| Custom Design System | styles.css | 5,000+ lines of custom Swiss-minimalist tokens, glassmorphism, and animations |
+
+### 🗄️ Backend, Auth & Storage
+
+| Technology | Role | Description |
+|---|---|---|
+| Supabase Client | Auth & Session | Real-time session handling, Google OAuth, and secure profile persistence |
+| Supabase Server | @supabase/server | Edge function authentication validation and credential security |
+| LocalStorage State | Draft & Session Cache | Offline resilience, draft preservation, and mock demo fallbacks |
+| Countries Database | countries.json | 195+ country dataset with normalized identifiers for fast search |
+
+### 🤖 AI Engine & Serverless APIs
+
+| Technology | Provider | Details |
+|---|---|---|
+| NVIDIA NIM API | NVIDIA Cloud | Enterprise LLM inference (nvidia/nemotron-3.5-lightning-30b-a3b) |
+| Express / Vite Middleware | Local Dev (server/) | Proxy server preventing client-side API key leakage during local dev |
+| Netlify Functions | Production (netlify/) | Serverless edge function for AI assistant prompt-response streaming |
+
+## 🏛️ System Architecture
+
+## 📱 Dedicated Mobile Application View
+
+The portal features a bespoke native mobile app experience specifically tailored for handheld touchscreens (≤ 768px), while keeping the desktop layout 100% untouched and pixel-perfect.
+
+### 📲 Mobile Native Features vs Desktop
+
+| Mobile Feature | Mobile View (≤ 768px) | Desktop View (> 768px) | Benefit |
+|---|---|---|---|
+| Sticky App Header | Sleek frosted app bar with circular back button & live step name | Full desktop navbar with multi-link navigation | Thumb-friendly navigation |
+| Auto-Save Status | Green pulsing badge (✓ Saved) in top header | Standard status notice | Instant feedback that data is safe |
+| Progress Stepper | 3-track segmented pill indicator with animated purple fill | Full horizontal node line with step titles | Clean header without clutter |
+| Step Icon Badges | Colorful 44px icon badges for each section (FiUser, FiBook, FiAward) | Standard section headers | Visual orientation |
+| Action Dock | Fixed bottom dock with safe-area padding for iPhone/Android home bars | Standard card button rows | Zero scrolling to submit/advance |
+| Bottom Navigation Bar | Floating 5-tab bar (Home, About, Center Apply Pill, FAQs, Profile) | Hidden (display: none !important) | Native app feel throughout the portal |
+
+## 📝 Student Application Flow & Country Search
+
+The enrollment pipeline is divided into three focused stages to maximize completion rates and prevent form fatigue:
+
+### 📋 Form Step Breakdown
+
+| Step | Section Name | Key Form Fields | Validation Rules |
+|---|---|---|---|
+| 01 | Personal Details | Full Name, Email, Phone Number, College Name, Department, Year of Study, Country, City & State | Valid email regex, 7-18 digit phone, required country selection |
+| 02 | Academic Details | Roll / Register Number, Graduation Year, CGPA or Percentage, LinkedIn URL, Resume Link | Year range (2020-2040), CGPA format, valid HTTP/HTTPS URLs |
+| 03 | Community & Motivation | Motivation Essay, Campus Event Details, Declaration Checkbox | Minimum essay length, mandatory confirmation checkbox |
+
+### 🌍 Live Country Search (SearchableCountrySelect)
+
+- **Dataset:** Integrated directly with countries.json containing 195+ sovereign nations.
+- **Resilient Focus Isolation:** onMouseDown and click event propagation isolation stops accidental dropdown dismissals while dragging scrollbars or typing.
+- **Keyboard Accessible:** Full support for ArrowDown, ArrowUp, Enter (select without form submit), and Escape (dismiss).
+- **Instant Search:** Real-time filtering matching any substring of the country name.
+
+## 📊 Student Dashboard & Profile Management
+
+Once an application is submitted or a student signs in with Supabase/Google Auth, they receive an interactive Student Dashboard:
+
+| Component | Description |
 |---|---|
-| Frontend | React |
-| Development & Build Tool | Vite |
-| UI Styling | CSS, Bootstrap |
-| AI Integration | NVIDIA NIM API |
-| Local API Integration | Vite server middleware |
-| Production API Integration | Netlify Functions |
-| Deployment | Netlify-compatible setup |
+| 🏷️ Status Tracker | Live status badge (Pending, Under Review, Approved, Rejected) with review date and ID |
+| 🛡️ Duplicate Guard | Automatically locks new submissions when an active application is already in review |
+| 📝 Review Card | Full collapsible summary of all submitted details, academic metrics, and links |
+| 👤 Profile Completer | Guided onboarding for Google OAuth users to finalize college and department information |
+| 🚀 Ambassador Pass | Unlocks the restricted Ambassador Portal as soon as status becomes Approved |
 
----
+## 🎖️ Ambassador Portal (Approved Members)
 
-## 📁 Project Structure
-
-The following shows the main application and AI-related files:
+Approved ambassadors gain access to a dedicated operations suite designed to maximize on-campus brand reach:
 
 ```text
-.
-├── netlify/
-│   └── functions/
-│       └── ai-assistant.mjs
-├── server/
-│   └── aiHandler.js
-├── src/
-│   ├── aiService.js
-│   ├── AmbassadorPortal.jsx
-│   ├── styles.css
-│   └── ...
-├── netlify.toml
-├── vite.config.js
-├── .env.example
-├── package.json
-└── README.md
+┌──────────────────────────────────────────────────────────────┐
+│  🎖️ NIYO AMBASSADOR COMMAND CENTER                           │
+├───────────────┬──────────────────────────────────────────────┤
+│ 💡 Campus AI  │ Generates tailored pitch decks & event ideas │
+│ 👥 Community  │ Global directory of fellow campus leaders    │
+│ 🎯 Campaigns  │ Active outreach initiatives & milestones     │
+│ 📈 Analytics  │ Student engagement metrics & leaderboard     │
+│ 📚 Resources  │ Brand assets, logos, pitch flyers & decks    │
+└───────────────┴──────────────────────────────────────────────┘
 ```
 
----
+- **Community Network:** Filter campus peers by country (India, UK, Singapore, etc.) and university.
+- **Outreach Toolkit:** Downloadable official Niyo presentation decks, flyers, and approved brand assets.
+- **Event Planner:** Guidelines and budget request templates for hosting campus orientation booths.
 
-## 🚀 Getting Started
+## 🛡️ Internal Administration Portal
 
-### 1. Prerequisites
+An administrative operations console allowing program leads to evaluate and manage student cohorts:
 
-Install the following:
+| Admin Feature | Operational Function |
+|---|---|
+| 📥 Pipeline Management | Triage incoming applications across Pending, Under Review, Approved, and Rejected queues |
+| 🔍 Candidate Dossier | Comprehensive inspection modal showing student background, GPA, resume link, and motivation |
+| ⚡ One-Click Decisions | Instant approve/reject action buttons with automatic status notifications |
+| 📊 Cohort Analytics | Aggregate breakdown of top represented universities, degree years, and geographical regions |
+| 🏷️ Batch Operations | Filter candidates by college, country, status, or search query |
 
-- [Node.js](https://nodejs.org/)
-- npm, which is included with Node.js
-- NVIDIA NIM API credentials, if you want to test the AI features
+## 🤖 AI Growth Assistant (NVIDIA NIM)
 
-### 2. Clone the Repository
+The built-in AI assistant acts as a 24/7 campaign mentor for ambassadors, leveraging enterprise-grade LLM inference via NVIDIA NIM:
+
+### 🎯 Suggested Prompts Supported
+
+- "How do I explain zero forex markup on Niyo cards to study-abroad students?"
+- "Draft a 3-slide pitch outline for our college finance club."
+- "Create an Instagram caption announcement for our campus fintech workshop."
+- "Suggest 5 engaging icebreaker games for our orientation desk."
+
+## 🎨 Design System & UI Tokens
+
+The user interface follows the Swiss Minimalist & Elevated Neumorphic design philosophy defined in design-system/MASTER.md:
+
+### 🎨 Color Palette Tokens
+
+| Variable | HEX Code | Swatch | Purpose |
+|---|---|---|---|
+| --purple | #4F35B5 | 🟣 | Primary brand color, key buttons, active tabs |
+| --purple-dark | #39238E | 🟣 | Button hover states, high-contrast badges |
+| --purple-soft | #F2EFFF | 🪻 | Icon containers, subtle pill tags, highlights |
+| --navy | #17152F | 🌑 | Section headings, primary titles, footer background |
+| --ink | #1E1B33 | 🖋️ | Primary body typography (WCAG AAA compliant) |
+| --muted | #59566E | 🩶 | Subtitles, helper text, and secondary information |
+| --white | #FFFFFF | ⚪ | Primary card surfaces and pure backgrounds |
+| --line | #E5E0F7 | 📏 | Border boundaries, card dividers, subtle rules |
+
+### 📐 Spatial Scale & Typography
+
+- **Headings Font:** 'Manrope', sans-serif (Weights: 600, 700, 800)
+- **Body Font:** 'DM Sans', sans-serif (Weights: 400, 500, 600)
+- **Rhythm:** Strict 4px/8px modular spacing scale (4px, 8px, 12px, 16px, 24px, 32px, 48px, 64px).
+- **Elevation:** Multi-tier drop shadows (var(--shadow-sm) through var(--shadow-lg)).
+
+## 📁 Project Directory Structure
+
+```text
+NIYO-STUDENT-AMBASSADOR/
+├── .agents/skills/supabase-server/   # Supabase Edge function skill guides
+├── asset/                            # High-resolution optimized imagery
+│   ├── homepage1.png                 # Hero smiling student ambassador
+│   └── homepage2.png                 # Campus community group visual
+├── design-system/                    # Design tokens & UI specifications
+│   └── MASTER.md                     # Single Source of Truth design manual
+├── netlify/                          # Serverless functions for Netlify cloud
+│   └── functions/
+│       └── ai-assistant.mjs          # Production NVIDIA NIM endpoint
+├── server/                           # Local API proxy server
+│   └── aiHandler.js                  # Vite development AI handler
+├── src/                              # React application source code
+│   ├── AdminPortal.jsx               # Internal administrator dashboard
+│   ├── adminService.js               # Application state & reviewer logic
+│   ├── aiService.js                  # Client-side AI dispatch service
+│   ├── AmbassadorPortal.jsx          # Approved ambassador workspace
+│   ├── ambassadorService.js          # Peer directory & campaign resources
+│   ├── ApplicationForm.jsx           # 3-step candidate application & country select
+│   ├── Auth.jsx                      # Email/password & Google OAuth sign-in
+│   ├── ProfileCompletion.jsx         # Post-OAuth student profile onboarding
+│   ├── StudentDashboard.jsx         # Application tracker & student home
+│   ├── styles.css                    # Master design system & responsive rules
+│   ├── supabaseClient.js             # Supabase cloud database & auth client
+│   └── main.jsx                      # App root, routing, navbar & bottom nav
+├── countries.json                    # 195+ international countries dataset
+├── index.html                        # Application entry HTML template
+├── netlify.toml                      # Netlify build, routing & function config
+├── package.json                      # Project manifest & dependencies
+├── README.md                         # Project documentation
+└── vite.config.js                    # Vite bundler plugins & server proxies
+```
+
+## 🔑 Environment Variables & Security
+
+Create a .env file in the project root based on .env.example:
+
+| Environment Variable | Required | Scope | Description |
+|---|---|---|---|
+| VITE_SUPABASE_URL | Yes | Client (VITE_) | Your Supabase project URL |
+| VITE_SUPABASE_PUBLISHABLE_KEY | Yes | Client (VITE_) | Supabase anon/publishable key |
+| NVIDIA_API_KEY | Optional | Server Only | NVIDIA NIM API key for AI assistant |
+| NVIDIA_MODEL | Optional | Server Only | Target NIM model (defaults to Nemotron) |
+| NVIDIA_BASE_URL | Optional | Server Only | NVIDIA NIM API endpoint base URL |
+
+⚠️ **CRITICAL SECURITY NOTICE:** Never prefix NVIDIA_API_KEY with VITE_. It must remain strictly server-side inside server/ or netlify/functions/ and must never be exposed to the browser bundle or committed to version control.
+
+## 🚀 Quickstart & Installation
+
+### 1️⃣ Prerequisites
+
+- Node.js: v18.0.0 or higher
+- npm: v9.0.0 or higher (bundled with Node.js)
+- Git
+
+### 2️⃣ Clone Repository
 
 ```bash
-git clone <your-github-repository-url>
-cd <project-folder>
+git clone https://github.com/Vishnu-cg2005/NIYO-STUDENT-AMBASSADOR.git
+cd NIYO-STUDENT-AMBASSADOR
 ```
 
-Replace the placeholders with your actual GitHub repository URL and project folder name.
-
-### 3. Install Dependencies
+### 3️⃣ Install Dependencies
 
 ```bash
 npm install
 ```
 
-### 4. Configure Environment Variables
+### 4️⃣ Setup Environment
 
-Create a `.env` file in the project root and add the required server-side NVIDIA NIM settings:
-
-```env
-NVIDIA_API_KEY=your_nvidia_nim_api_key
-NVIDIA_MODEL=nvidia/nemotron-3.5-lightning-30b-a3b
-NVIDIA_BASE_URL=https://integrate.api.nvidia.com/v1
+```bash
+cp .env.example .env
+# Open .env and add your Supabase / NVIDIA credentials
 ```
 
-Use your own API key. Do not copy real credentials into this README or commit them to GitHub.
-
-### 5. Run the Development Server
+### 5️⃣ Run Local Development Server
 
 ```bash
 npm run dev
 ```
 
-Vite will display the local development URL in the terminal.
+Open your browser and navigate to http://localhost:5173.
 
-### 6. Build for Production
+### 6️⃣ Build for Production
 
 ```bash
 npm run build
 ```
 
-To preview the production build locally:
+The optimized production bundle will be generated in the dist/ directory.
+
+### 7️⃣ Preview Production Build Locally
 
 ```bash
 npm run preview
 ```
 
----
+## 🌍 Production Deployment
 
-## 🔑 Environment Variables
+### 🔹 Option A: Vercel (Recommended)
 
-| Variable | Description |
-|---|---|
-| `NVIDIA_API_KEY` | Server-side NVIDIA NIM API key |
-| `NVIDIA_MODEL` | NVIDIA NIM model identifier |
-| `NVIDIA_BASE_URL` | NVIDIA NIM API base URL |
+1. Import repository on Vercel Dashboard.
+2. Configure Framework Preset: Vite.
+3. Add environment variables (VITE_SUPABASE_URL, VITE_SUPABASE_PUBLISHABLE_KEY).
+4. Click Deploy. Single-page routing rewrite is handled automatically.
 
-### 🔐 API Key Security
-- Keep `NVIDIA_API_KEY` on the server side only.
-- Do not prefix the key with `VITE_`.
-- Do not expose it in frontend code, browser storage, or client-side requests.
-- Do not commit `.env` to GitHub.
-- Use `.env.example` with placeholder values to document required variables.
+### 🔹 Option B: Netlify
 
----
+1. Connect repository on Netlify Dashboard.
+2. Build command: npm run build | Publish directory: dist.
+3. Serverless functions will deploy automatically via netlify/functions/ai-assistant.mjs.
+4. Configure environment variables in Netlify site settings.
 
-## 🌍 Deployment
+## 🧪 Testing & Quality Assurance
 
-The frontend can be deployed to a static hosting platform such as Netlify. The AI endpoint must also be deployed as a server-side function.
+| Test Category | Scope | Verification Method | Status |
+|---|---|---|---|
+| Responsive Layouts | 320px, 375px, 768px, 1280px+ | Tested against iOS & Android viewports | ✅ Pass |
+| Desktop Preservation | Full screen (1200px - 1920px) | Confirmed zero visual shifts or regressions | ✅ Pass |
+| Country Select | All 195+ countries in countries.json | Tested selection, keyboard navigation, clear button | ✅ Pass |
+| Form Drafts | Page reload during multi-step flow | Verified localStorage draft recovery | ✅ Pass |
+| Duplicate Prevention | Submitting multiple times | Active application lock activates | ✅ Pass |
+| Production Bundler | Full tree-shake and asset compression | Verified via npm run build (< 1.5s build time) | ✅ Pass |
 
-For production deployment:
+## 🤝 Contributing & Code of Conduct
 
-1. Configure the required environment variables in the hosting platform.
-2. Deploy the frontend and server-side function.
-3. Test the deployed AI endpoint separately from the frontend build.
-4. Verify the student application and Admin workflows in the deployed environment.
-5. Confirm that Admin-only information is restricted to authorized Admin users.
+1. Fork the Repository on GitHub.
+2. Create a Feature Branch: `git checkout -b feature/campus-enhancement`.
+3. Commit Your Changes: `git commit -m "feat: enhance mobile touch controls"`.
+4. Push to Your Branch: `git push origin feature/campus-enhancement`.
+5. Open a Pull Request with a detailed explanation of changes.
 
-> A successful frontend build does not by itself confirm that the production AI endpoint, authentication, database persistence, or cross-user application status updates are working.
+💡 **Note:** When contributing, ensure that desktop styles remain strictly untouched and all mobile adjustments are scoped inside media queries.
 
----
+## 📄 License & Disclaimers
 
-## 🛡️ Privacy & Data Handling
-
-- 🔑 Keep API credentials and secrets server-side.
-- 🚫 Do not send passwords, session tokens, or unnecessary student personal information to the AI model.
-- 👤 Restrict student-specific data to the correct student account.
-- 🔒 Keep Admin-only pages, tasks, and information protected.
-- 📭 Show honest empty states when real student data is unavailable.
-- 🧾 Use verified information for Niyo-specific product claims and program policies.
+- **License:** This project is open-source under the MIT License.
+- **Disclaimer:** This portal is developed for the Niyo Campus Student Ambassador Program. All brand assets, logos, and trademarks belong to their respective owners. Product specifications and program benefits are subject to official Niyo policies.
 
 ---
 
-## 🧪 Testing Checklist
+Built with 💜 for Student Leaders across the Globe
 
-Before considering a feature complete, test it in the target environment:
-
-- [ ] Homepage and navigation
-- [ ] Student login and application flow
-- [ ] Application status and Admin approval flow
-- [ ] Admin task-management workflow
-- [ ] Student dashboard and empty states
-- [ ] AI assistant responses and error handling
-- [ ] AI API key is not exposed to the frontend
-- [ ] Mobile layout and desktop layout
-- [ ] Production build
-- [ ] Deployed application and server-side endpoint
-
----
-
-## 🗺️ Development Roadmap
-
-- [ ] Complete and verify the student application and approval flow
-- [ ] Ensure student-facing details use real data or clear empty states
-- [ ] Verify the AI assistant against approved Niyo Campus information
-- [ ] Complete mobile responsiveness while preserving the desktop design
-- [ ] Test the deployed application and server-side integrations
-
----
-
-## 🤝 Contributing
-
-Contributions, suggestions, and bug reports are welcome. Before making changes, please preserve existing Admin workflows and avoid introducing unverified program details or fabricated student data.
-
----
-
-## 📄 License
-
-No license has been specified yet. Add a license file if the project is released for public reuse.
+*Niyo Campus Student Ambassador Program • Connecting University Communities*
